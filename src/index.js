@@ -29,19 +29,17 @@ app.use('/api', printRouter);
 app.use('/api', tasksRouter);
 
 // OpenAPI + Scalar docs
-const swaggerSpec = {
+const openApiDocument = {
   openapi: '3.0.0',
   info: {
     title: 'Einstein Board API',
-    version: '0.1.0',
-    description: 'Focused task management based on the Einstein Principle'
+    version: '0.1.0'
   },
-  servers: [{ url: 'http://localhost:3456' }]
+  servers: [{ url: 'http://localhost:3456' }],
+  paths: {}
 };
 
-app.use('/docs', apiReference({
-  spec: swaggerSpec,
-}));
+app.use('/docs', apiReference({ spec: openApiDocument }));
 
 // 404 handler
 app.use((req, res) => {
