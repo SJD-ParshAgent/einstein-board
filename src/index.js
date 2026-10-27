@@ -1,5 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
+import swaggerJsdoc from 'swagger-jsdoc';
+import { apiReference } from '@scalar/express-api-reference';
 import { getDb } from './db/index.js';
 import { getCurrentFocusMode } from './services/settings.js';
 import layer0Router from './routes/layer0.js';
@@ -26,10 +28,30 @@ app.use('/api', layer3Router);
 app.use('/api', printRouter);
 app.use('/api', tasksRouter);
 
+// OpenAPI + Scalar docs
+const swaggerSpec = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Einstein Board API',
+    version: '0.1.0',
+    description: 'Focused task management based on the Einstein Principle'
+  },
+  servers: [{ url: 'http://localhost:3456' }]
+};
+
+app.use('/docs', apiReference({
+  spec: swaggerSpec,
+}));
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong' });
+  res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
 app.listen(port, () => {
