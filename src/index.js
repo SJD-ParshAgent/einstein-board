@@ -1,7 +1,6 @@
 import express from 'express';
 import 'dotenv/config';
-import swaggerJsdoc from 'swagger-jsdoc';
-import { apiReference } from '@scalar/express-api-reference';
+import swaggerUi from 'swagger-ui-express';
 import { getDb } from './db/index.js';
 import { getCurrentFocusMode } from './services/settings.js';
 import layer0Router from './routes/layer0.js';
@@ -28,8 +27,8 @@ app.use('/api', layer3Router);
 app.use('/api', printRouter);
 app.use('/api', tasksRouter);
 
-// OpenAPI + Scalar docs
-const swaggerSpec = {
+// Swagger UI
+const swaggerDocument = {
   openapi: '3.0.0',
   info: {
     title: 'Einstein Board API',
@@ -39,9 +38,7 @@ const swaggerSpec = {
   servers: [{ url: 'http://localhost:3456' }]
 };
 
-app.use('/docs', apiReference({
-  spec: swaggerSpec,
-}));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 404 handler
 app.use((req, res) => {
