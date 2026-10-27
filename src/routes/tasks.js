@@ -4,6 +4,34 @@ import { completeTask } from '../services/recurrence.js';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/tasks:
+ *   post:
+ *     summary: Create a new task
+ *     tags: [Tasks]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [project_id, title]
+ *             properties:
+ *               project_id:
+ *                 type: integer
+ *               title:
+ *                 type: string
+ *               due_date:
+ *                 type: string
+ *                 format: date
+ *               pinned_today:
+ *                 type: boolean
+ *     responses:
+ *       201:
+ *         description: Task created
+ */
+
 // POST /tasks
 router.post('/tasks', (req, res) => {
   const { project_id, title, due_date, pinned_today, notes, is_recurring, recurrence_type, recurrence_rule } = req.body;
@@ -31,6 +59,28 @@ router.post('/tasks', (req, res) => {
   const newTask = db.prepare('SELECT * FROM tasks WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(newTask);
 });
+
+/**
+ * @swagger
+ * /api/tasks/{id}:
+ *   patch:
+ *     summary: Update a task
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Task updated
+ */
 
 // PATCH /tasks/:id
 router.patch('/tasks/:id', (req, res) => {
@@ -67,6 +117,23 @@ router.patch('/tasks/:id', (req, res) => {
   const updated = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
   res.json(updated);
 });
+
+/**
+ * @swagger
+ * /api/tasks/{id}/complete:
+ *   post:
+ *     summary: Mark a task as complete (triggers recurrence if applicable)
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Task completed
+ */
 
 // POST /tasks/:id/complete
 router.post('/tasks/:id/complete', (req, res) => {

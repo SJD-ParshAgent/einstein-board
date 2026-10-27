@@ -4,6 +4,22 @@ import { getCurrentFocusMode } from '../services/settings.js';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/dashboard:
+ *   get:
+ *     summary: Get dashboard overview (Layer 3)
+ *     tags: [Layers]
+ *     parameters:
+ *       - in: query
+ *         name: focus
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Dashboard summary
+ */
+
 // GET /dashboard - Layer 3 (strategic view)
 router.get('/dashboard', (req, res) => {
   const focusMode = req.query.focus !== undefined 
