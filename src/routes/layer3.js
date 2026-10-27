@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { getDb } from '../db/index.js';
 import { getCurrentFocusMode } from '../services/settings.js';
 
 const router = Router();
@@ -8,6 +9,8 @@ router.get('/dashboard', (req, res) => {
   const focusMode = req.query.focus !== undefined 
     ? parseInt(req.query.focus, 10) 
     : getCurrentFocusMode();
+
+  const db = getDb();
 
   const activeProjects = db.prepare(`
     SELECT COUNT(*) as count FROM projects 

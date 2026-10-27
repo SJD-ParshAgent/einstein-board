@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { getDb } from '../db/index.js';
 import { getCurrentFocusMode } from '../services/settings.js';
 
 const router = Router();
@@ -10,6 +11,8 @@ router.get('/projects', (req, res) => {
     : getCurrentFocusMode();
 
   let projects;
+
+  const db = getDb();
 
   if (focusMode) {
     // Focus mode: only active standard projects + stable projects
