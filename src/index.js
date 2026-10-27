@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 import { getDb } from './db/index.js';
 import layer0Router from './routes/layer0.js';
+import layer1Router from './routes/layer1.js';
 
 const app = express();
 const port = process.env.PORT || 3456;
@@ -14,6 +15,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api', layer0Router);
+app.use('/api', layer1Router);
 
 app.listen(port, () => {
   console.log(`Einstein Board running on port ${port}`);
