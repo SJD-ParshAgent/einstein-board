@@ -1,6 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
 import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 import { getDb } from './db/index.js';
 import { getCurrentFocusMode } from './services/settings.js';
 import layer0Router from './routes/layer0.js';
@@ -28,17 +29,21 @@ app.use('/api', printRouter);
 app.use('/api', tasksRouter);
 
 // Swagger UI
-const swaggerDocument = {
-  openapi: '3.0.0',
-  info: {
-    title: 'Einstein Board API',
-    version: '0.1.0',
-    description: 'Focused task management based on the Einstein Principle'
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Einstein Board API',
+      version: '0.1.0',
+      description: 'Focused task management based on the Einstein Principle'
+    },
+    servers: [{ url: 'http://localhost:3456' }]
   },
-  servers: [{ url: 'http://localhost:3456' }]
+  apis: ['./src/routes/tasks.js', './src/routes/layer0.js', './src/routes/layer1.js', './src/routes/layer2.js', './src/routes/layer3.js']
 };
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // 404 handler
 app.use((req, res) => {
