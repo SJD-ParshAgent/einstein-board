@@ -7,6 +7,7 @@ import layer1Router from './routes/layer1.js';
 import layer2Router from './routes/layer2.js';
 import layer3Router from './routes/layer3.js';
 import printRouter from './routes/print.js';
+import tasksRouter from './routes/tasks.js';
 
 const app = express();
 const port = process.env.PORT || 3456;
@@ -23,6 +24,7 @@ app.use('/api', layer1Router);
 app.use('/api', layer2Router);
 app.use('/api', layer3Router);
 app.use('/api', printRouter);
+app.use('/api', tasksRouter);
 
 // Error handling
 app.use((err, req, res, next) => {
