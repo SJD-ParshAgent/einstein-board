@@ -26,10 +26,15 @@ app.use('/api', layer3Router);
 app.use('/api', printRouter);
 app.use('/api', tasksRouter);
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
+
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something went wrong' });
+  res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
 app.listen(port, () => {
