@@ -1,6 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
 import { getDb } from './db/index.js';
+import { getCurrentFocusMode } from './services/settings.js';
 import layer0Router from './routes/layer0.js';
 import layer1Router from './routes/layer1.js';
 import layer2Router from './routes/layer2.js';
@@ -14,7 +15,7 @@ app.use(express.json());
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', focusMode: getDb().prepare('SELECT focus_mode FROM settings WHERE id = 1').get()?.focus_mode ?? 0 });
+  res.json({ status: 'ok', focusMode: getCurrentFocusMode() });
 });
 
 app.use('/api', layer0Router);

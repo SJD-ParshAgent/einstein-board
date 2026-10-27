@@ -1,12 +1,13 @@
 import { Router } from 'express';
-import { getDb } from '../db/index.js';
+import { getCurrentFocusMode } from '../services/settings.js';
 
 const router = Router();
 
 // GET /dashboard - Layer 3 (strategic view)
 router.get('/dashboard', (req, res) => {
-  const db = getDb();
-  const focusMode = db.prepare('SELECT focus_mode FROM settings WHERE id = 1').get()?.focus_mode ?? 0;
+  const focusMode = req.query.focus !== undefined 
+    ? parseInt(req.query.focus, 10) 
+    : getCurrentFocusMode();
 
   const activeProjects = db.prepare(`
     SELECT COUNT(*) as count FROM projects 

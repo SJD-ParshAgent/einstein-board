@@ -24,9 +24,9 @@ export function completeTask(taskId) {
   let nextDue = null;
 
   if (task.recurrence_type === 'fixed') {
-    // Fixed: use cron/next occurrence logic (simplified for now)
-    // In real version we'd use a cron parser
-    nextDue = task.next_due_date; // placeholder
+    // Fixed recurrence: for now just keep the same next_due_date
+    // A proper cron parser (e.g. node-cron-parser) should be added later
+    nextDue = task.next_due_date;
   } else if (task.recurrence_type === 'rolling') {
     // Rolling: add interval to last_completed_at
     const interval = task.recurrence_rule; // e.g. "7d", "2w"
