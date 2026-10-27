@@ -60,6 +60,28 @@ router.post('/tasks', (req, res) => {
   res.status(201).json(newTask);
 });
 
+/**
+ * @swagger
+ * /api/tasks/{id}:
+ *   patch:
+ *     summary: Update a task
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Task updated
+ */
+
 // PATCH /tasks/:id
 router.patch('/tasks/:id', (req, res) => {
   const taskId = parseInt(req.params.id, 10);

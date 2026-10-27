@@ -4,6 +4,22 @@ import { getCurrentFocusMode } from '../services/settings.js';
 
 const router = Router();
 
+/**
+ * @swagger
+ * /api/projects:
+ *   get:
+ *     summary: Get projects list (Layer 2)
+ *     tags: [Layers]
+ *     parameters:
+ *       - in: query
+ *         name: focus
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of projects
+ */
+
 // GET /projects - Layer 2 (project list)
 router.get('/projects', (req, res) => {
   const focusMode = req.query.focus !== undefined 

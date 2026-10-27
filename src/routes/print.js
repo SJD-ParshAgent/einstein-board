@@ -6,6 +6,17 @@ const router = Router();
 
 const PRINTER_SCRIPT = process.env.PRINTER_SCRIPT_PATH;
 
+/**
+ * @swagger
+ * /api/print/today:
+ *   post:
+ *     summary: Print today's tasks as a receipt
+ *     tags: [Print]
+ *     responses:
+ *       200:
+ *         description: Print job started
+ */
+
 // POST /print/today
 router.post('/print/today', async (req, res) => {
   if (!PRINTER_SCRIPT) {
