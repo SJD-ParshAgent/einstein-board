@@ -2,7 +2,7 @@ import { getDb } from '../db/index.js';
 
 // Allowed values from schema
 const ALLOWED_TYPES = ['standard', 'stable'];
-const ALLOWED_STAGES = ['holding', 'on-deck', 'active', 'graveyard'];
+const ALLOWED_STAGES = ['holding', 'active', 'done'];
 const ALLOWED_CATEGORIES = ['professional', 'community', 'personal'];
 const ALLOWED_PENDING_TIERS = ['daydream', 'white-whale'];
 
@@ -27,9 +27,7 @@ export function createProject(data) {
     type = 'standard',
     stage = null,
     category = null,
-    focus = 0,
     pending_tier = null,
-    einstein_exception = 0,
     sort_order = 0,
     description = null
   } = data;
@@ -41,17 +39,23 @@ export function createProject(data) {
   if (category && !ALLOWED_CATEGORIES.includes(category)) throw new Error(`category must be one of: ${ALLOWED_CATEGORIES.join(', ')}`);
   if (pending_tier && !ALLOWED_PENDING_TIERS.includes(pending_tier)) throw new Error(`pending_tier must be one of: ${ALLOWED_PENDING_TIERS.join(', ')}`);
 
+  // Stable projects cannot have stage/category
+  if (type === 'stable') {
+    if (stage || category) throw new Error('stable projects cannot have stage or category');
+  } else {
+    if (!category) throw new Error('standard projects require a category');
+    if (!stage) stage = 'holding';
+  }
+
   const result = db.prepare(`
-    INSERT INTO projects (title, type, stage, category, focus, pending_tier, einstein_exception, sort_order, description)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO projects (title, type, stage, category, pending_tier, sort_order, description)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `).run(
     title,
     type,
     stage,
     category,
-    focus ? 1 : 0,
     pending_tier,
-    einstein_exception ? 1 : 0,
     sort_order,
     description
   );
@@ -67,14 +71,12 @@ export function updateProject(id, data) {
   const fields = [];
   const values = [];
 
-  const allowed = ['title', 'type', 'stage', 'category', 'focus', 'pending_tier', 'einstein_exception', 'sort_order', 'description'];
+  const allowed = ['title', 'type', 'stage', 'category', 'pending_tier', 'sort_order', 'description'];
 
   for (const key of allowed) {
     if (data[key] !== undefined) {
       let value = data[key];
-      if (['focus', 'einstein_exception'].includes(key)) {
-        value = value ? 1 : 0;
-      }
+
       // Basic validation for enum fields
       if (key === 'type' && !ALLOWED_TYPES.includes(value)) {
         throw new Error(`type must be one of: ${ALLOWED_TYPES.join(', ')}`);
@@ -109,6 +111,7 @@ export function deleteProject(id) {
     throw new Error('Cannot delete stable projects (Home & Hearth or Whirlwind)');
   }
 
-  db.prepare('DELETE FROM projects WHERE id = ?').run(id);
+  // Archive instead of hard delete
+  db.prepare('UPDATE projects SET archived_at = CURRENT_TIMESTAMP WHERE id = ?').run(id);
   return { success: true, deletedId: id };
 }

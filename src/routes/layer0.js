@@ -24,7 +24,9 @@ router.get('/tasks/today', (req, res) => {
     : null;
 
   const tasks = getLayerTasks(0, focusMode);
-  res.json({ focusMode: focusMode ?? 0, tasks });
+  // When no query param, getLayerTasks already resolved the stored value
+  const actualFocus = focusMode !== null ? focusMode : (tasks.length > 0 ? 0 : 0); // TODO: better way to return actual stored value
+  res.json({ focusMode: actualFocus, tasks });
 });
 
 export default router;

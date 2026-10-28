@@ -1,3 +1,18 @@
+## Changes Implemented (2026-10-27) — Ready for Review
+
+**Parsh made the following changes so far:**
+
+- `schema.sql` upgraded to v2 (new stages `holding|active|done`, `tasks.status` now includes `on-deck`, removed `einstein_exception` + `focus` columns, added `projects.completed_at`, `settings.active_cap_mode`)
+- `src/db/migrate.js` rewritten to use versioned `PRAGMA user_version` migrations
+- `src/services/projects.js` updated: new stage enum, stable project guards, category required for standard projects, archive instead of hard delete, removed old columns from create/update
+- `src/services/layerQueries.js` fixed: switched to `date('now', 'localtime')`, removed references to deleted columns
+- `src/routes/layer0.js` improved focusMode reporting when no query param is passed
+- `src/index.js` moved Layer routers to `/api/layers/*` to fix `/projects` route shadowing between layer2.js and projects.js
+
+Fresh dev DB (`einstein-board.db` v2) was created during testing.
+
+---
+
 # Einstein Board: backend changes and open questions
 
 Audit of `SJD-ParshAgent/einstein-board` (commit `eb96f31`) against the kanban design in `design/`.

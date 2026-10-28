@@ -22,13 +22,17 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', focusMode: getCurrentFocusMode() });
 });
 
-app.use('/api', layer0Router);
-app.use('/api', layer1Router);
-app.use('/api', layer2Router);
-app.use('/api', layer3Router);
-app.use('/api', printRouter);
 app.use('/api', tasksRouter);
 app.use('/api', projectsRouter);
+app.use('/api/layers', layer0Router);
+app.use('/api/layers', layer1Router);
+app.use('/api/layers', layer2Router);
+app.use('/api/layers', layer3Router);
+app.use('/api', printRouter);
+app.use('/api/layers', layer0Router);
+app.use('/api/layers', layer1Router);
+app.use('/api/layers', layer2Router);
+app.use('/api/layers', layer3Router);
 
 // Swagger UI
 const swaggerOptions = {

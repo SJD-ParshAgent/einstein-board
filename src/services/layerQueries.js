@@ -10,8 +10,8 @@ export function getLayerTasks(layer, focusMode = null) {
 
   const isFocus = focusMode === 1;
   const dateFilter = layer === 0 
-    ? `t.due_date <= date('now') OR t.pinned_today = 1`
-    : `t.due_date <= date('now', '+7 days')`;
+    ? `t.due_date <= date('now', 'localtime') OR t.pinned_today = 1`
+    : `t.due_date <= date('now', 'localtime', '+7 days')`;
 
   const orderBy = layer === 0 
     ? `t.sort_order, t.due_date`
@@ -21,15 +21,14 @@ export function getLayerTasks(layer, focusMode = null) {
   if (isFocus) {
     whereFocus = `
       AND (
-        p.type = 'stable'
+        p.type = 'stable' 
         OR (p.type = 'standard' AND p.stage = 'active')
-        OR (p.einstein_exception = 1)
       )
     `;
   }
 
   const sql = `
-    SELECT t.*, p.title as project_title, p.focus, p.einstein_exception
+    SELECT t.*, p.title as project_title
     FROM tasks t
     JOIN projects p ON p.id = t.project_id
     WHERE t.status != 'done'

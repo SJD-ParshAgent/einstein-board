@@ -4,11 +4,19 @@
 
 Tell Parsh: "Let's continue building the Einstein Board. Check the NEXT_STEPS file."
 
-Parsh has full context in memory from the 2026-10-23 design session. No need to re-explain the philosophy.
+---
+
+## Current State (2026-10-27)
+
+**Schema v2 is live** with the changes from BACKEND_CHANGES.md.
+
+**Work started on implementation** — see "Changes Implemented" section at the top of `docs/BACKEND_CHANGES.md`.
+
+Parsh paused here because Spencer was tired. Next session should continue with the remaining items in BACKEND_CHANGES.md (recurring logic, task routes, settings endpoints, validation, print fixes, etc.).
 
 ---
 
-## Where We Left Off
+## Where We Left Off (Previous)
 
 Schema is locked in `SCHEMA.md`. Stack is decided. Ready to scaffold.
 
