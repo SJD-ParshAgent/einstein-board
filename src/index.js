@@ -58,6 +58,11 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
-app.listen(port, () => {
-  console.log(`Einstein Board running on port ${port}`);
-});
+// Only start the server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    console.log(`Einstein Board running on port ${port}`);
+  });
+}
+
+export default app;
