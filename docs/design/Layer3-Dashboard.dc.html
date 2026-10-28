@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Layer 3 Dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif&display=swap">
+<style>
+body{margin:0}
+a:link,a:visited{color:inherit}
+.proj-link{text-decoration:none}
+.proj-link:hover,.proj-link:focus-visible{text-decoration:underline;text-underline-offset:4px}
+button{font-family:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+</style>
+</helmet>
+<div style="--paper:#1A1A19;--card:#222221;--ink:#DAD8D2;--muted:#A3A099;--rule:#4A4945;min-height:1000px;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif">
+
+  <header style="max-width: 1320px; margin: 0 auto; padding: 28px 24px 12px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 28px">
+      <h1 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 36px; line-height: 1; letter-spacing: -0.01em; color: var(--ink)">Einstein Board</h1>
+      <nav aria-label="Layers" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border: 1px solid var(--rule); border-radius: 6px">
+        <a href="Layer0-Today.dc.html" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--ink)"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">0</span>Today</a>
+        <a href="Layer1-Week.dc.html" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--ink)"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">1</span>This week</a>
+        <a href="Main.dc.html" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--ink)"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">2</span>Projects</a>
+        <a href="Layer3-Dashboard.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; text-decoration: none; background: var(--ink); color: var(--paper)"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">3</span>Dashboard</a>
+      </nav>
+    </div>
+
+    <button role="switch" aria-checked="{{focusAria}}" onClick="{{toggleFocus}}" style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 16px 0 8px; border: 1px solid var(--ink); border-radius: 999px; background: transparent; color: var(--ink); font-size: 14px; font-weight: 500">
+      <span style="{{trackStyle}}"><span style="{{knobStyle}}"></span></span>
+      Focus mode
+    </button>
+  </header>
+
+  <div style="max-width: 1320px; margin: 0 auto; padding: 0 24px 24px; box-sizing: border-box">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">{{eyebrow}}</span>
+  </div>
+
+  <main style="max-width: 1320px; margin: 0 auto; padding: 8px 24px 64px; box-sizing: border-box; display: flex; flex-direction: column; gap: 44px">
+
+    <!-- This week -->
+    <section aria-labelledby="wk">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 10px; border-bottom: 1px dashed var(--ink); margin-bottom: 20px">
+        <h2 id="wk" style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 24px; color: var(--ink)">This week</h2>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{weekTotal}}</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 16px">
+        <sc-for list="{{weekStats}}" as="w" hint-placeholder-count="4">
+          <div style="padding: 16px 20px; border: 1px solid var(--rule); border-radius: 4px; background: var(--card); display: flex; flex-direction: column; gap: 4px">
+            <span style="font-family: 'Instrument Serif', Georgia, serif; font-size: 56px; line-height: 1; color: var(--ink)">{{w.n}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">{{w.label}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Active -->
+    <section aria-labelledby="act">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 10px; border-bottom: 1px dashed var(--ink); margin-bottom: 20px">
+        <h2 id="act" style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 24px; color: var(--ink)">Active</h2>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{activeText}}</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 16px">
+        <sc-for list="{{slots}}" as="s" hint-placeholder-count="3">
+          <sc-if value="{{s.filled}}" hint-placeholder-val="{{ true }}">
+            <article style="padding: 20px; border: 1px solid var(--rule); border-radius: 4px; background: var(--card); display: flex; flex-direction: column; gap: 14px">
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">{{s.category}}</span>
+                <h3 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 28px; line-height: 1.1; color: var(--ink)"><a class="proj-link" href="Project-Detail.dc.html" style="display: block; padding: 8px 0; margin: -8px 0; color: inherit">{{s.title}}</a></h3>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{s.counts}}</span>
+              </div>
+              <div style="border-top: 1px dashed var(--rule); padding-top: 12px; display: flex; flex-direction: column; gap: 8px">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">On deck</span>
+                <sc-for list="{{s.deck}}" as="d" hint-placeholder-count="1">
+                  <span style="font-size: 15px; line-height: 1.35; color: var(--ink)">{{d.title}}</span>
+                </sc-for>
+                <sc-if value="{{s.noDeck}}" hint-placeholder-val="{{ false }}">
+                  <span style="font-size: 14px; color: var(--muted)">Nothing on deck.</span>
+                </sc-if>
+              </div>
+            </article>
+          </sc-if>
+          <sc-if value="{{s.open}}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 20px; border: 1px dashed var(--rule); border-radius: 4px; display: flex; align-items: center; min-height: 160px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">Open slot</div>
+          </sc-if>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- Always on / Holding / Done -->
+    <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+
+      <section aria-labelledby="ao" style="flex: 1 1 300px; min-width: 0">
+        <div style="padding-bottom: 10px; border-bottom: 1px dashed var(--ink); margin-bottom: 16px">
+          <h2 id="ao" style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 24px; color: var(--ink)">Always on</h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px">
+          <sc-for list="{{stables}}" as="b" hint-placeholder-count="2">
+            <article style="padding: 16px; border: 1px solid var(--rule); border-radius: 4px; background: var(--card); display: flex; flex-direction: column; gap: 10px">
+              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px">
+                <h3 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 22px; color: var(--ink)">{{b.title}}</h3>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{b.counts}}</span>
+              </div>
+              <sc-for list="{{b.deck}}" as="d" hint-placeholder-count="1">
+                <span style="font-size: 14px; line-height: 1.35; color: var(--ink)">{{d.title}}</span>
+              </sc-for>
+              <sc-if value="{{b.noDeck}}" hint-placeholder-val="{{ false }}">
+                <span style="font-size: 14px; color: var(--muted)">Nothing on deck.</span>
+              </sc-if>
+            </article>
+          </sc-for>
+        </div>
+      </section>
+
+      <sc-if value="{{showSecondary}}" hint-placeholder-val="{{ true }}">
+      <section aria-labelledby="hd" style="flex: 1 1 300px; min-width: 0">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 10px; border-bottom: 1px dashed var(--ink); margin-bottom: 16px">
+          <h2 id="hd" style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 24px; color: var(--ink)">Holding</h2>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{holdingCount}}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 18px">
+          <sc-for list="{{holdingGroups}}" as="g" hint-placeholder-count="2">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">{{g.label}}</span>
+              <sc-for list="{{g.items}}" as="i" hint-placeholder-count="2">
+                <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px dashed var(--rule)">
+                  <span style="font-size: 15px; color: var(--ink)">{{i.title}}</span>
+                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">{{i.category}}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{showSecondary}}" hint-placeholder-val="{{ true }}">
+      <section aria-labelledby="dn" style="flex: 1 1 300px; min-width: 0">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 10px; border-bottom: 1px dashed var(--ink); margin-bottom: 16px">
+          <h2 id="dn" style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 24px; color: var(--ink)">Done</h2>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{doneCount}}</span>
+        </div>
+        <div style="display: flex; flex-direction: column">
+          <sc-for list="{{doneList}}" as="i" hint-placeholder-count="1">
+            <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px dashed var(--rule)">
+              <span style="font-size: 15px; color: var(--muted); text-decoration: line-through">{{i.title}}</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">{{i.category}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+      </sc-if>
+    </div>
+  </main>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1360,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      focus: false,
+      projects: [
+        { id: 1, title: 'Home & Hearth', stable: true },
+        { id: 2, title: 'Whirlwind', stable: true },
+        { id: 3, title: 'Grant proposal rewrite', category: 'professional', stage: 'active' },
+        { id: 4, title: 'Neighborhood tool library', category: 'community', stage: 'active' },
+        { id: 5, title: 'Basement workshop', category: 'personal', stage: 'active' },
+        { id: 6, title: 'Curriculum overhaul', category: 'professional', stage: 'holding', tier: 'White whale' },
+        { id: 7, title: 'Food pantry volunteer schedule', category: 'community', stage: 'holding' },
+        { id: 8, title: 'Learn to throw pottery', category: 'personal', stage: 'holding', tier: 'Daydream' },
+        { id: 9, title: 'Write the book', category: 'professional', stage: 'holding', tier: 'White whale' },
+        { id: 10, title: 'Old website migration', category: 'professional', stage: 'done' }
+      ],
+      tasks: [
+        { pid: 1, title: 'Take out recycling', status: 'todo', when: 'today' },
+        { pid: 1, title: 'Water the ferns', status: 'done', when: 'today' },
+        { pid: 1, title: 'Replace furnace filter', status: 'todo', when: 'week' },
+        { pid: 2, title: 'Sign off on vendor invoice', status: 'todo', when: 'today' },
+        { pid: 2, title: 'Quick data pull for the weekly report', status: 'in-progress', when: 'week' },
+        { pid: 3, title: 'Draft the aims section', status: 'in-progress', when: 'today' },
+        { pid: 3, title: 'Collect letters of support', status: 'on-deck', when: 'week' },
+        { pid: 3, title: 'Write budget justification', status: 'todo', when: 'week' },
+        { pid: 4, title: 'Confirm library room booking', status: 'on-deck', when: 'today' },
+        { pid: 4, title: 'Inventory donated tools', status: 'todo', when: 'week' },
+        { pid: 5, title: 'Mount the pegboard', status: 'on-deck', when: 'week' },
+        { pid: 5, title: 'Order dust collection hose', status: 'todo', when: 'later' },
+        { pid: 6, title: 'Outline unit one', status: 'todo', when: 'week' },
+        { pid: 7, title: 'Send volunteer sign-up form', status: 'todo', when: 'week' }
+      ]
+    };
+  }
+
+  renderVals() {
+    const S = this.state;
+    const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+    const countsFor = (pid) => {
+      const mine = S.tasks.filter((t) => t.pid === pid);
+      const open = mine.filter((t) => t.status !== 'done').length;
+      const prog = mine.filter((t) => t.status === 'in-progress').length;
+      return open + ' open · ' + prog + ' in progress';
+    };
+    const deckFor = (pid) => S.tasks.filter((t) => t.pid === pid && t.status === 'on-deck').map((t) => ({ title: t.title }));
+
+    const focus = S.focus;
+    const inFocus = (pid) => { const p = S.projects.find((x) => x.id === pid); return p.stable || p.stage === 'active'; };
+    const weekAll = S.tasks.filter((t) => t.when === 'today' || t.when === 'week');
+    const week = weekAll.filter((t) => !focus || inFocus(t.pid));
+    const hiddenN = weekAll.length - week.length;
+    const weekStats = [['todo', 'To do'], ['on-deck', 'On deck'], ['in-progress', 'In progress'], ['done', 'Done']].map(([k, label]) => ({
+      label, n: week.filter((t) => t.status === k).length
+    }));
+
+    const active = S.projects.filter((p) => p.stage === 'active');
+    const slots = [0, 1, 2].map((i) => {
+      const p = active[i];
+      if (!p) return { filled: false, open: true };
+      const deck = deckFor(p.id);
+      return { filled: true, open: false, category: p.category, title: p.title, counts: countsFor(p.id), deck, noDeck: deck.length === 0 };
+    });
+
+    const stables = S.projects.filter((p) => p.stable).map((p) => {
+      const deck = deckFor(p.id);
+      return { title: p.title, counts: countsFor(p.id), deck, noDeck: deck.length === 0 };
+    });
+
+    const holding = S.projects.filter((p) => p.stage === 'holding');
+    const groupDefs = [['White whale', 'White whales'], ['Daydream', 'Daydreams'], ['', 'Unsorted']];
+    const holdingGroups = groupDefs.map(([tier, label]) => ({
+      label,
+      items: holding.filter((p) => (p.tier || '') === tier).map((p) => ({ title: p.title, category: p.category }))
+    })).filter((g) => g.items.length > 0);
+
+    const done = S.projects.filter((p) => p.stage === 'done');
+
+    return {
+      eyebrow: focus ? 'Layer 3 · Dashboard · focus mode on' : 'Layer 3 · Dashboard',
+      focusAria: focus ? 'true' : 'false',
+      toggleFocus: () => this.setState({ focus: !focus }),
+      trackStyle: 'position:relative;width:40px;height:24px;border-radius:999px;flex:none;background:' + (focus ? 'var(--ink)' : 'var(--rule)'),
+      knobStyle: 'position:absolute;top:3px;left:' + (focus ? '19px' : '3px') + ';width:18px;height:18px;border-radius:50%;background:' + (focus ? 'var(--paper)' : 'var(--ink)'),
+      showSecondary: !focus,
+      weekTotal: plural(week.length, 'task') + ' due in the next 7 days' + (hiddenN > 0 ? ' · ' + hiddenN + ' hidden by focus mode' : ''),
+      weekStats,
+      activeText: active.length + ' of 3',
+      slots,
+      stables,
+      holdingGroups,
+      holdingCount: String(holding.length),
+      doneList: done.map((p) => ({ title: p.title, category: p.category })),
+      doneCount: String(done.length)
+    };
+  }
+}
+</script>
+</body>
+</html>
