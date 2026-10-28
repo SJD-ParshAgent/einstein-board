@@ -10,6 +10,7 @@ import layer2Router from './routes/layer2.js';
 import layer3Router from './routes/layer3.js';
 import printRouter from './routes/print.js';
 import tasksRouter from './routes/tasks.js';
+import projectsRouter from './routes/projects.js';
 
 const app = express();
 const port = process.env.PORT || 3456;
@@ -27,6 +28,7 @@ app.use('/api', layer2Router);
 app.use('/api', layer3Router);
 app.use('/api', printRouter);
 app.use('/api', tasksRouter);
+app.use('/api', projectsRouter);
 
 // Swagger UI
 const swaggerOptions = {
@@ -39,7 +41,7 @@ const swaggerOptions = {
     },
     servers: [{ url: 'http://localhost:3456' }]
   },
-  apis: ['./src/routes/tasks.js', './src/routes/layer0.js', './src/routes/layer1.js', './src/routes/layer2.js', './src/routes/layer3.js']
+  apis: ['./src/routes/tasks.js', './src/routes/projects.js', './src/routes/layer0.js', './src/routes/layer1.js', './src/routes/layer2.js', './src/routes/layer3.js']
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
