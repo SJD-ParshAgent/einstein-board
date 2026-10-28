@@ -155,3 +155,56 @@ Einstein Board
 - The two permanent stable projects are seeded automatically
 
 Let me know if you want a ready-to-import Postman collection JSON file instead.
+
+---
+
+## Postman Test Script (paste into Tests tab)
+
+Copy and paste this into the **Tests** tab of any request. It will:
+- Show you the exact response body
+- Highlight common failure reasons
+- Validate status codes
+- Make debugging much faster
+
+```javascript
+// === Einstein Board - Universal Response Debugger ===
+
+pm.test("Response received", () => {
+    pm.response.to.be.ok;
+});
+
+// Log the full response so you can see exactly what failed
+const responseBody = pm.response.json();
+console.log("=== RESPONSE ===");
+console.log(JSON.stringify(responseBody, null, 2));
+
+// Status code checks
+pm.test("Status code is 2xx or expected error", () => {
+    const code = pm.response.code;
+    pm.expect([200, 201, 204, 400, 404, 500].includes(code)).to.be.true;
+});
+
+// Helpful error visualization
+if (pm.response.code >= 400) {
+    console.warn("!!! REQUEST FAILED !!!");
+    console.warn("Status:", pm.response.code);
+    console.warn("Error message:", responseBody.error || responseBody.message || "No error field");
+    
+    if (responseBody.error) {
+        pm.test("Error message logged", () => {
+            console.log("Error:", responseBody.error);
+        });
+    }
+}
+
+// Quick success indicators
+if (pm.response.code === 201) {
+    console.log("✅ Resource created successfully");
+}
+if (pm.response.code === 200) {
+    console.log("✅ Request successful");
+}
+
+// Show response time
+console.log("Response time:", pm.response.responseTime, "ms");
+```
