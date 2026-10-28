@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Print receipt</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif&display=swap">
+<style>
+body{margin:0}
+a:link,a:visited{color:inherit}
+button,input,select{font-family:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.38}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+input[type=checkbox]{accent-color:#DAD8D2;width:22px;height:22px;margin:0;flex:none}
+</style>
+</helmet>
+<div style="--paper:#1A1A19;--card:#222221;--ink:#DAD8D2;--muted:#A3A099;--rule:#4A4945;width:560px;min-height:1100px;box-sizing:border-box;padding:36px 36px 40px;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;display:flex;flex-direction:column;gap:28px">
+
+  <header style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">Receipt printer</span>
+      <h1 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 40px; line-height: 1; color: var(--ink)">Print receipt</h1>
+    </div>
+    <a href="Layer0-Today.dc.html" aria-label="Close" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--rule); border-radius: 4px; color: var(--ink); text-decoration: none">
+      <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </a>
+  </header>
+
+  <sc-if value="{{sent}}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="padding: 14px 16px; border-radius: 4px; font-size: 14px; background: var(--ink); color: var(--paper)">{{sentText}}</div>
+  </sc-if>
+
+  <form style="display: flex; flex-direction: column; gap: 26px" novalidate>
+
+    <fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column">
+      <legend style="padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 500">What to print</legend>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{scopeOptions}}" as="s" hint-placeholder-count="4">
+          <button type="button" aria-pressed="{{s.pressed}}" onClick="{{s.pick}}" style="{{s.style}}">{{s.label}}</button>
+        </sc-for>
+      </div>
+    </fieldset>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="pr-pick" style="font-size: 14px; font-weight: 500">{{pickLabel}}</label>
+      <select id="pr-pick" value="{{pickValue}}" onChange="{{setPick}}" style="box-sizing: border-box; width: 100%; min-height: 48px; padding: 0 14px; border-radius: 4px; background: var(--card); color: var(--ink); font-size: 16px; border: 1px solid var(--rule)">
+        <sc-for list="{{pickOptions}}" as="o" hint-placeholder-count="5">
+          <option value="{{o.id}}" selected="{{o.selected}}">{{o.label}}</option>
+        </sc-for>
+      </select>
+    </div>
+
+    <div style="display: flex; flex-direction: column">
+      <sc-if value="{{showDone}}" hint-placeholder-val="{{ true }}">
+        <label style="display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 15px">
+          <input type="checkbox" checked="{{includeDone}}" onChange="{{toggleDone}}">
+          Include tasks already done
+        </label>
+      </sc-if>
+      <sc-if value="{{showGroup}}" hint-placeholder-val="{{ true }}">
+        <label style="display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 15px">
+          <input type="checkbox" checked="{{group}}" onChange="{{toggleGroup}}">
+          Group by project
+        </label>
+      </sc-if>
+    </div>
+
+    <!-- Receipt preview -->
+    <section aria-label="Receipt preview" style="display: flex; flex-direction: column; gap: 12px; align-items: center">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; width: 100%">
+        <span style="font-size: 14px; font-weight: 500">Preview</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{summary}}</span>
+      </div>
+      <div style="box-sizing: border-box; width: 340px; max-width: 100%; padding: 22px 20px; background: var(--card); border-top: 2px dashed var(--rule); border-bottom: 2px dashed var(--rule); font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.5; color: var(--ink); display: flex; flex-direction: column; gap: 14px">
+        <div style="text-align: center; display: flex; flex-direction: column; gap: 2px">
+          <span style="letter-spacing: 0.14em; font-weight: 500">EINSTEIN BOARD</span>
+          <span style="color: var(--muted)">{{receiptTitle}}</span>
+        </div>
+        <div style="border-top: 1px dashed var(--rule)"></div>
+
+        <sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+          <span style="text-align: center; color: var(--muted)">Nothing to print.</span>
+        </sc-if>
+
+        <sc-for list="{{groups}}" as="g" hint-placeholder-count="2">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <sc-if value="{{g.showHead}}" hint-placeholder-val="{{ true }}">
+              <span style="letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">{{g.head}}</span>
+            </sc-if>
+            <sc-for list="{{g.items}}" as="i" hint-placeholder-count="2">
+              <div style="display: flex; gap: 10px; align-items: flex-start">
+                <span style="flex: none; white-space: pre">{{i.mark}}</span>
+                <div style="display: flex; flex-direction: column; min-width: 0">
+                  <span>{{i.title}}</span>
+                  <sc-if value="{{i.hasSub}}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 12px; color: var(--muted)">{{i.sub}}</span>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+
+        <div style="border-top: 1px dashed var(--rule)"></div>
+        <span style="text-align: center; color: var(--muted)">{{footer}}</span>
+      </div>
+    </section>
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding-top: 22px; border-top: 1px dashed var(--ink)">
+      <button type="button" onClick="{{print}}" disabled="{{cantPrint}}" style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 28px; border: 1px solid var(--ink); border-radius: 4px; background: var(--ink); color: var(--paper); font-size: 15px; font-weight: 600">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="1.5"/><path d="M7 14h10v7H7z"/></svg>
+        {{printLabel}}
+      </button>
+      <a href="Layer0-Today.dc.html" style="display: flex; align-items: center; min-height: 48px; padding: 0 16px; border: 1px solid var(--rule); border-radius: 4px; color: var(--ink); font-size: 15px; text-decoration: none">Cancel</a>
+    </div>
+  </form>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":560,"height":1100}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { scope: 'day', taskId: '6', day: 'Today', week: 'this', projId: '3', includeDone: false, group: true, sent: false };
+    this.scopes = [['task', 'One task'], ['day', 'One day'], ['week', 'One week'], ['project', 'One project']];
+    this.projects = [
+      { id: '1', title: 'Home & Hearth' }, { id: '2', title: 'Whirlwind' },
+      { id: '3', title: 'Grant proposal rewrite' }, { id: '4', title: 'Neighborhood tool library' }, { id: '5', title: 'Basement workshop' },
+      { id: '6', title: 'Curriculum overhaul', held: true }, { id: '7', title: 'Food pantry volunteer schedule', held: true }
+    ];
+    this.days = [['Today', 'Today (Tue)'], ['Wed', 'Wednesday'], ['Thu', 'Thursday'], ['Fri', 'Friday'], ['Sat', 'Saturday'], ['Sun', 'Sunday']];
+    this.weeks = [['this', 'This week'], ['next', 'Next week']];
+    this.tasks = [
+      { id: '1', pid: '1', title: 'Take out recycling', status: 'todo', day: 'Today', week: 'this' },
+      { id: '2', pid: '1', title: 'Water the ferns', status: 'done', day: 'Today', week: 'this' },
+      { id: '3', pid: '1', title: 'Replace furnace filter', status: 'todo', day: 'Sat', week: 'this' },
+      { id: '4', pid: '2', title: 'Sign off on vendor invoice', status: 'todo', day: 'Today', week: 'this' },
+      { id: '5', pid: '2', title: 'Quick data pull for the weekly report', status: 'in-progress', day: 'Thu', week: 'this' },
+      { id: '6', pid: '3', title: 'Draft the aims section', status: 'in-progress', day: 'Today', week: 'this' },
+      { id: '7', pid: '3', title: 'Collect letters of support', status: 'on-deck', day: 'Fri', week: 'this' },
+      { id: '8', pid: '3', title: 'Write budget justification', status: 'todo', day: 'Fri', week: 'this' },
+      { id: '9', pid: '4', title: 'Confirm library room booking', status: 'on-deck', day: 'Today', week: 'this' },
+      { id: '10', pid: '4', title: 'Inventory donated tools', status: 'todo', day: 'Sun', week: 'this' },
+      { id: '11', pid: '5', title: 'Mount the pegboard', status: 'on-deck', day: 'Sat', week: 'this' },
+      { id: '12', pid: '5', title: 'Order dust collection hose', status: 'todo', day: '', week: '' },
+      { id: '13', pid: '6', title: 'Outline unit one', status: 'todo', day: 'Wed', week: 'this' },
+      { id: '14', pid: '7', title: 'Send volunteer sign-up form', status: 'todo', day: 'Thu', week: 'this' }
+    ];
+  }
+
+  set(patch) {
+    this.setState({ ...patch, sent: false });
+  }
+
+  renderVals() {
+    const S = this.state;
+    const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+    const projTitle = (pid) => this.projects.find((p) => p.id === pid).title;
+    const seg = (on) => 'min-height:48px;padding:0 10px;border:1px solid ' + (on ? 'var(--ink)' : 'var(--rule)') + ';border-radius:4px;font-size:14px;font-weight:500;' + (on ? 'background:var(--ink);color:var(--paper)' : 'background:transparent;color:var(--ink)');
+    const scope = S.scope;
+
+    // What the picker offers
+    let pickLabel, pickOptions, pickValue, setPick;
+    if (scope === 'task') {
+      pickLabel = 'Task';
+      pickValue = S.taskId;
+      pickOptions = this.tasks.filter((t) => t.status !== 'done').map((t) => ({ id: t.id, label: t.title + ' — ' + projTitle(t.pid), selected: t.id === S.taskId }));
+      setPick = (e) => this.set({ taskId: e.target.value });
+    } else if (scope === 'day') {
+      pickLabel = 'Day';
+      pickValue = S.day;
+      pickOptions = this.days.map(([k, label]) => ({ id: k, label, selected: k === S.day }));
+      setPick = (e) => this.set({ day: e.target.value });
+    } else if (scope === 'week') {
+      pickLabel = 'Week';
+      pickValue = S.week;
+      pickOptions = this.weeks.map(([k, label]) => ({ id: k, label, selected: k === S.week }));
+      setPick = (e) => this.set({ week: e.target.value });
+    } else {
+      pickLabel = 'Project';
+      pickValue = S.projId;
+      pickOptions = this.projects.map((p) => ({ id: p.id, label: p.title + (p.held ? ' (Holding)' : ''), selected: p.id === S.projId }));
+      setPick = (e) => this.set({ projId: e.target.value });
+    }
+
+    // What the receipt holds
+    let list, title;
+    if (scope === 'task') {
+      list = this.tasks.filter((t) => t.id === S.taskId);
+      title = 'TASK';
+    } else if (scope === 'day') {
+      list = this.tasks.filter((t) => t.day === S.day);
+      title = S.day === 'Today' ? 'TODAY · TUE' : this.days.find((d) => d[0] === S.day)[1].toUpperCase();
+    } else if (scope === 'week') {
+      list = this.tasks.filter((t) => t.week === S.week);
+      title = S.week === 'this' ? 'THIS WEEK' : 'NEXT WEEK';
+    } else {
+      list = this.tasks.filter((t) => t.pid === S.projId);
+      title = projTitle(S.projId).toUpperCase();
+    }
+    if (scope !== 'task' && !S.includeDone) list = list.filter((t) => t.status !== 'done');
+
+    const grouped = S.group && (scope === 'day' || scope === 'week');
+    const showSub = !grouped && scope !== 'project';
+    const mk = (t) => ({ mark: t.status === 'done' ? '[x]' : '[ ]', title: t.title, hasSub: showSub, sub: projTitle(t.pid) });
+    let groups = [];
+    if (list.length) {
+      if (grouped) {
+        const seen = [];
+        list.forEach((t) => { if (seen.indexOf(t.pid) < 0) seen.push(t.pid); });
+        groups = seen.map((pid) => ({ showHead: true, head: projTitle(pid), items: list.filter((t) => t.pid === pid).map(mk) }));
+      } else {
+        groups = [{ showHead: false, head: '', items: list.map(mk) }];
+      }
+    }
+    const n = list.length;
+
+    return {
+      sent: S.sent,
+      sentText: 'Sent to the receipt printer: ' + plural(n, 'task') + '.',
+      scopeOptions: this.scopes.map(([k, label]) => ({ label, pressed: scope === k ? 'true' : 'false', style: seg(scope === k), pick: () => this.set({ scope: k }) })),
+      pickLabel, pickOptions, pickValue, setPick,
+      showDone: scope !== 'task',
+      includeDone: S.includeDone,
+      toggleDone: () => this.set({ includeDone: !S.includeDone }),
+      showGroup: scope === 'day' || scope === 'week',
+      group: S.group,
+      toggleGroup: () => this.set({ group: !S.group }),
+      summary: '1 receipt · ' + plural(n, 'task'),
+      receiptTitle: title,
+      empty: n === 0,
+      groups,
+      footer: plural(n, 'task').toUpperCase(),
+      cantPrint: n === 0,
+      printLabel: n === 0 ? 'Nothing to print' : 'Print ' + plural(n, 'task'),
+      print: () => { if (n > 0) this.setState({ sent: true }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

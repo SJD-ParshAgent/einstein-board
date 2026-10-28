@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Layer 2 Project list</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif&display=swap">
+<style>
+body{margin:0}
+a:link,a:visited{color:inherit}
+.proj-link{text-decoration:none}
+.proj-link:hover,.proj-link:focus-visible{text-decoration:underline;text-underline-offset:4px}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+button:disabled{cursor:not-allowed;opacity:.38}
+</style>
+</helmet>
+<div style="--paper:#1A1A19;--card:#222221;--ink:#DAD8D2;--muted:#A3A099;--rule:#4A4945;--accent:#DAD8D2;--onAccent:#1A1A19;min-height:1000px;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif">
+
+  <header style="max-width: 1320px; margin: 0 auto; padding: 28px 24px 12px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 28px">
+      <h1 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 36px; line-height: 1; letter-spacing: -0.01em; color: var(--ink)">Einstein Board</h1>
+      <nav aria-label="Layers" style="display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; border: 1px solid var(--rule); border-radius: 6px">
+        <a href="Layer0-Today.dc.html" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--ink)"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">0</span>Today</a>
+        <a href="Layer1-Week.dc.html" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--ink)"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">1</span>This week</a>
+        <a href="Main.dc.html" aria-current="page" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; text-decoration: none; background: var(--ink); color: var(--paper)"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">2</span>Projects</a>
+        <a href="Layer3-Dashboard.dc.html" style="display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; text-decoration: none; color: var(--ink)"><span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px">3</span>Dashboard</a>
+      </nav>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px">
+      <a href="Form-Project.dc.html" style="display: flex; align-items: center; min-height: 44px; padding: 0 18px; border: 1px solid var(--ink); border-radius: 4px; background: var(--ink); color: var(--paper); font-size: 14px; font-weight: 600; text-decoration: none">+ New project</a>
+      <a href="Print-Receipt.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 18px; border: 1px solid var(--ink); border-radius: 4px; background: transparent; color: var(--ink); font-size: 14px; font-weight: 500; text-decoration: none">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="1.5"/><path d="M7 14h10v7H7z"/></svg>
+        Print receipt
+      </a>
+      <div style="display: flex; align-items: center; gap: 12px" role="img" aria-label="{{gaugeLabel}}">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">Active</span>
+        <div style="display: flex; gap: 6px">
+          <sc-for list="{{pips}}" as="pip" hint-placeholder-count="3">
+            <span style="{{pip.style}}"></span>
+          </sc-for>
+        </div>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; color: var(--ink)">{{gaugeText}}</span>
+      </div>
+
+    </div>
+  </header>
+
+  <div style="max-width: 1320px; margin: 0 auto; padding: 0 24px 20px; box-sizing: border-box">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">Layer 2 · Project list</span>
+  </div>
+
+  <sc-if value="{{hasNotice}}" hint-placeholder-val="{{ false }}">
+    <div style="max-width: 1320px; margin: 0 auto; padding: 0 24px; box-sizing: border-box">
+      <div role="status" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 8px 4px 16px; margin-bottom: 12px; border-radius: 4px; font-size: 14px; background: var(--ink); color: var(--paper)">
+        <span>{{noticeText}}</span>
+        <button onClick="{{dismissNotice}}" style="min-height: 44px; min-width: 44px; border: 0; background: transparent; color: inherit; font-size: 14px; text-decoration: underline">Dismiss</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <main style="max-width: 1320px; margin: 0 auto; padding: 8px 24px 64px; box-sizing: border-box">
+
+    <section aria-label="Always-on projects" style="display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 36px">
+      <sc-for list="{{stables}}" as="s" hint-placeholder-count="2">
+        <article style="flex: 1 1 320px; min-width: 0; box-sizing: border-box; padding: 18px 20px; border: 1px solid var(--rule); border-radius: 4px; background: var(--card); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px">
+          <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">Always on</span>
+            <h2 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 26px; color: var(--ink)"><a class="proj-link" href="Project-Detail.dc.html" style="display: block; padding: 8px 0; margin: -8px 0; color: inherit">{{s.title}}</a></h2>
+            <span style="font-size: 14px; color: var(--muted)">{{s.blurb}}</span>
+          </div>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--ink)">{{s.openText}}</span>
+        </article>
+      </sc-for>
+      <sc-if value="{{whirlwindHidden}}" hint-placeholder-val="{{ false }}">
+        <div style="flex: 1 1 320px; min-width: 0; box-sizing: border-box; padding: 18px 20px; border: 1px dashed var(--rule); border-radius: 4px; display: flex; flex-direction: column; justify-content: center; gap: 4px">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">Hidden in focus mode</span>
+          <span style="font-size: 14px; color: var(--muted)">Whirlwind still shows in Today and This week.</span>
+        </div>
+      </sc-if>
+    </section>
+
+    <section aria-label="Project pipeline" style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+      <sc-for list="{{columns}}" as="col" hint-placeholder-count="3">
+        <div style="{{col.style}}">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 10px; border-bottom: 1px dashed var(--ink)">
+            <h2 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 24px; color: var(--ink)">{{col.label}}</h2>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; color: var(--muted)">{{col.countText}}</span>
+          </div>
+          <div style="font-size: 13px; color: var(--muted); margin: 8px 0 14px">{{col.hint}}</div>
+
+          <sc-if value="{{col.collapsed}}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 16px; border: 1px dashed var(--rule); border-radius: 4px; font-size: 13px; color: var(--muted)">Out of sight while focus mode is on.</div>
+          </sc-if>
+
+          <sc-if value="{{col.showCards}}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <sc-for list="{{col.cards}}" as="c" hint-placeholder-count="2">
+                <article style="border: 1px solid var(--rule); border-radius: 4px; background: var(--card); overflow: hidden">
+                  <div style="padding: 14px 16px 14px; display: flex; flex-direction: column; gap: 8px">
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+                      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">{{c.category}}</span>
+                      <sc-if value="{{c.hasTier}}" hint-placeholder-val="{{ false }}">
+                        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 6px; border: 1px solid var(--muted); border-radius: 3px; color: var(--muted)">{{c.tier}}</span>
+                      </sc-if>
+                    </div>
+                    <h3 style="margin: 0; font-size: 17px; line-height: 1.3; font-weight: 500; color: var(--ink); text-wrap: pretty"><a class="proj-link" href="Project-Detail.dc.html" style="display: block; padding: 12px 0; margin: -12px 0; color: inherit">{{c.title}}</a></h3>
+                    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{c.openText}}</span>
+                  </div>
+                  <div style="display: flex; border-top: 1px dashed var(--rule)">
+                    <button onClick="{{c.moveLeft}}" disabled="{{c.cantLeft}}" style="flex: 1 1 0; min-height: 44px; padding: 0 12px; border: 0; background: transparent; color: var(--ink); font-size: 13px; text-align: left">{{c.leftText}}</button>
+                    <button onClick="{{c.moveRight}}" disabled="{{c.cantRight}}" style="flex: 1 1 0; min-height: 44px; padding: 0 12px; border: 0; border-left: 1px dashed var(--rule); background: transparent; color: var(--ink); font-size: 13px; text-align: right">{{c.rightText}}</button>
+                  </div>
+                </article>
+              </sc-for>
+              <sc-if value="{{col.empty}}" hint-placeholder-val="{{ false }}">
+                <div style="padding: 16px; border: 1px dashed var(--rule); border-radius: 4px; font-size: 13px; color: var(--muted)">Nothing here.</div>
+              </sc-if>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </section>
+  </main>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"capMode":{"editor":"enum","options":["block","warn"],"default":"block","section":"Rules"},"$preview":{"width":1360,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.stages = ['holding', 'active', 'done'];
+    this.stageLabel = { holding: 'Holding', active: 'Active', done: 'Done' };
+    this.state = {
+      focus: false,
+      notice: null,
+      projects: [
+        { id: 1, title: 'Home & Hearth', stable: true, blurb: 'Chores, recurring events, one-offs' },
+        { id: 2, title: 'Whirlwind', stable: true, blurb: 'Ad hoc requests and quick jobs' },
+        { id: 3, title: 'Grant proposal rewrite', category: 'professional', stage: 'active' },
+        { id: 4, title: 'Neighborhood tool library', category: 'community', stage: 'active' },
+        { id: 5, title: 'Basement workshop', category: 'personal', stage: 'active' },
+        { id: 6, title: 'Curriculum overhaul', category: 'professional', stage: 'holding', tier: 'White whale' },
+        { id: 7, title: 'Food pantry volunteer schedule', category: 'community', stage: 'holding' },
+        { id: 8, title: 'Learn to throw pottery', category: 'personal', stage: 'holding', tier: 'Daydream' },
+        { id: 9, title: 'Write the book', category: 'professional', stage: 'holding', tier: 'White whale' },
+        { id: 10, title: 'Old website migration', category: 'professional', stage: 'done' }
+      ],
+      openCounts: { 1: 2, 2: 2, 3: 3, 4: 2, 5: 2, 6: 1, 7: 1, 8: 0, 9: 0, 10: 0 }
+    };
+  }
+
+  renderVals() {
+    const S = this.state;
+    const focus = S.focus;
+    const stages = this.stages;
+    const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+    const activeCount = S.projects.filter((p) => p.stage === 'active').length;
+
+    const pipCount = Math.max(3, activeCount);
+    const pips = [];
+    for (let i = 0; i < pipCount; i++) {
+      const over = i >= 3;
+      pips.push({ style: 'width:14px;height:14px;border-radius:' + (over ? '2px' : '50%') + ';box-sizing:border-box;border:1.5px solid var(--ink);background:' + (i < activeCount ? 'var(--ink)' : 'transparent') });
+    }
+
+    const hints = { holding: 'Daydreams and white whales', active: 'Three at most', done: 'Finished' };
+    const columns = stages.map((st, i) => {
+      const list = S.projects.filter((p) => !p.stable && p.stage === st);
+      const collapsed = focus && st !== 'active';
+      const grow = focus ? (st === 'active' ? '3 1 360px' : '0 1 200px') : '1 1 250px';
+      return {
+        label: this.stageLabel[st],
+        hint: hints[st],
+        collapsed,
+        showCards: !collapsed,
+        empty: !collapsed && list.length === 0,
+        countText: st === 'active' ? list.length + ' of 3' : String(list.length),
+        style: 'flex:' + grow + ';min-width:0;' + (collapsed ? 'opacity:.7' : ''),
+        cards: list.map((p) => ({
+          category: p.category,
+          hasTier: !!p.tier && p.stage === 'holding',
+          tier: p.tier || '',
+          title: p.title,
+          openText: plural(S.openCounts[p.id] || 0, 'open task'),
+          cantLeft: i === 0,
+          cantRight: i === stages.length - 1,
+          leftText: i === 0 ? '' : '← ' + this.stageLabel[stages[i - 1]],
+          rightText: i === stages.length - 1 ? '' : this.stageLabel[stages[i + 1]] + ' →',
+          moveLeft: () => this.moveProject(p.id, -1),
+          moveRight: () => this.moveProject(p.id, 1)
+        }))
+      };
+    });
+    const stables = S.projects.filter((p) => p.stable && !(focus && p.title === 'Whirlwind')).map((p) => ({
+      title: p.title, blurb: p.blurb, openText: plural(S.openCounts[p.id] || 0, 'open task')
+    }));
+
+    return {
+      pips,
+      gaugeText: activeCount + ' of 3',
+      gaugeLabel: activeCount + ' of 3 active projects',
+      focusAria: focus ? 'true' : 'false',
+      toggleFocus: () => this.setState({ focus: !focus, notice: null }),
+      trackStyle: 'position:relative;width:40px;height:24px;border-radius:999px;flex:none;background:' + (focus ? 'var(--accent)' : 'var(--rule)'),
+      knobStyle: 'position:absolute;top:3px;left:' + (focus ? '19px' : '3px') + ';width:18px;height:18px;border-radius:50%;background:' + (focus ? 'var(--onAccent)' : 'var(--ink)'),
+      hasNotice: !!S.notice,
+      noticeText: S.notice ? S.notice.text : '',
+      dismissNotice: () => this.setState({ notice: null }),
+      columns,
+      stables,
+      whirlwindHidden: focus
+    };
+  }
+
+  moveProject(id, dir) {
+    const S = this.state;
+    const capMode = this.props.capMode ?? 'block';
+    const p = S.projects.find((x) => x.id === id);
+    const to = this.stages[this.stages.indexOf(p.stage) + dir];
+    if (!to) return;
+    const activeCount = S.projects.filter((x) => x.stage === 'active').length;
+    let notice = null;
+    if (to === 'active' && activeCount >= 3) {
+      if (capMode === 'block') {
+        this.setState({ notice: { text: 'Active is full (3 of 3). Move one out before bringing "' + p.title + '" in.' } });
+        return;
+      }
+      notice = { text: 'Over the cap: ' + (activeCount + 1) + ' active projects. The board is built around three at most.' };
+    }
+    this.setState({ projects: S.projects.map((x) => (x.id === id ? { ...x, stage: to } : x)), notice });
+  }
+}
+</script>
+</body>
+</html>

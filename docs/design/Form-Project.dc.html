@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project form</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif&display=swap">
+<style>
+body{margin:0}
+a:link,a:visited{color:inherit}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+</style>
+</helmet>
+<div style="--paper:#1A1A19;--card:#222221;--ink:#DAD8D2;--muted:#A3A099;--rule:#4A4945;width:560px;min-height:1000px;box-sizing:border-box;padding:36px 36px 40px;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;display:flex;flex-direction:column;gap:28px">
+
+  <header style="display: flex; flex-direction: column; gap: 6px">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">{{eyebrow}}</span>
+    <h1 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 40px; line-height: 1; color: var(--ink)">{{heading}}</h1>
+  </header>
+
+  <sc-if value="{{saved}}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 16px; border-radius: 4px; font-size: 14px; background: var(--ink); color: var(--paper)">
+      <span>{{savedText}}</span>
+      <a href="Main.dc.html" style="display: flex; align-items: center; min-height: 44px; color: inherit; text-underline-offset: 3px">Back to projects</a>
+    </div>
+  </sc-if>
+
+  <form style="display: flex; flex-direction: column; gap: 26px" novalidate>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="p-title" style="font-size: 14px; font-weight: 500">Title</label>
+      <input id="p-title" type="text" value="{{title}}" onChange="{{setTitle}}" aria-invalid="{{titleInvalid}}" aria-describedby="p-title-err" style="{{titleStyle}}">
+      <sc-if value="{{errors.title}}" hint-placeholder-val="{{ false }}">
+        <span id="p-title-err" style="font-size: 13px">Error: give the project a title.</span>
+      </sc-if>
+    </div>
+
+    <fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column">
+      <legend style="padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 500">Category</legend>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{categoryOptions}}" as="c" hint-placeholder-count="3">
+          <button type="button" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.label}}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{errors.category}}" hint-placeholder-val="{{ false }}">
+        <span style="font-size: 13px; margin-top: 8px">Error: choose a category.</span>
+      </sc-if>
+    </fieldset>
+
+    <fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column">
+      <legend style="padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 500">Stage</legend>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{stageOptions}}" as="s" hint-placeholder-count="3">
+          <button type="button" aria-pressed="{{s.pressed}}" onClick="{{s.pick}}" style="{{s.style}}">{{s.label}}</button>
+        </sc-for>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px; margin-top: 12px">
+        <div style="display: flex; gap: 6px" aria-hidden="true">
+          <sc-for list="{{pips}}" as="pip" hint-placeholder-count="3">
+            <span style="{{pip.style}}"></span>
+          </sc-for>
+        </div>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{gaugeText}}</span>
+      </div>
+      <sc-if value="{{capMessage}}" hint-placeholder-val="{{ false }}">
+        <div role="alert" style="margin-top: 12px; padding: 12px 14px; border: 1px solid var(--ink); border-radius: 4px; font-size: 14px; line-height: 1.4">{{capMessage}}</div>
+      </sc-if>
+    </fieldset>
+
+    <sc-if value="{{showTier}}" hint-placeholder-val="{{ true }}">
+      <fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column">
+        <legend style="padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 500">What kind of someday? <span style="font-weight: 400; color: var(--muted)">(optional)</span></legend>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+          <sc-for list="{{tierOptions}}" as="t" hint-placeholder-count="3">
+            <button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+          </sc-for>
+        </div>
+      </fieldset>
+    </sc-if>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="p-desc" style="font-size: 14px; font-weight: 500">Description <span style="font-weight: 400; color: var(--muted)">(optional)</span></label>
+      <textarea id="p-desc" rows="4" onChange="{{setDesc}}" style="box-sizing: border-box; width: 100%; padding: 12px 14px; border-radius: 4px; background: var(--card); color: var(--ink); font-size: 16px; line-height: 1.4; border: 1px solid var(--rule); resize: vertical">{{desc}}</textarea>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-top: 22px; border-top: 1px dashed var(--ink)">
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
+        <button type="button" onClick="{{save}}" style="min-height: 48px; padding: 0 28px; border: 1px solid var(--ink); border-radius: 4px; background: var(--ink); color: var(--paper); font-size: 15px; font-weight: 600">Save project</button>
+        <a href="Main.dc.html" style="display: flex; align-items: center; min-height: 48px; padding: 0 16px; border: 1px solid var(--rule); border-radius: 4px; color: var(--ink); font-size: 15px; text-decoration: none">Cancel</a>
+      </div>
+      <sc-if value="{{isEdit}}" hint-placeholder-val="{{ false }}">
+        <button type="button" style="min-height: 44px; padding: 0 8px; border: 0; background: transparent; color: var(--muted); font-size: 14px; text-decoration: underline; text-underline-offset: 3px">Delete project</button>
+      </sc-if>
+    </div>
+  </form>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["new","edit"],"default":"new","section":"Form"},"capMode":{"editor":"enum","options":["block","warn"],"default":"block","section":"Rules"},"$preview":{"width":560,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { f: {}, errors: {}, saved: false };
+    this.categories = [['professional', 'Professional'], ['community', 'Community'], ['personal', 'Personal']];
+    this.stages = [['holding', 'Holding'], ['active', 'Active'], ['done', 'Done']];
+    this.tiers = [['', 'None'], ['daydream', 'Daydream'], ['white-whale', 'White whale']];
+  }
+
+  defaults() {
+    const edit = (this.props.mode ?? 'new') === 'edit';
+    return edit
+      ? { title: 'Learn to throw pottery', category: 'personal', stage: 'holding', tier: 'daydream', desc: '' }
+      : { title: '', category: '', stage: 'holding', tier: '', desc: '' };
+  }
+
+  set(patch) {
+    this.setState({ f: { ...this.state.f, ...patch }, errors: {}, saved: false });
+  }
+
+  renderVals() {
+    const S = this.state;
+    const d = this.defaults();
+    const v = (k) => (k in S.f ? S.f[k] : d[k]);
+    const edit = (this.props.mode ?? 'new') === 'edit';
+    const capMode = this.props.capMode ?? 'block';
+    const seg = (on) => 'min-height:48px;padding:0 8px;border:1px solid ' + (on ? 'var(--ink)' : 'var(--rule)') + ';border-radius:4px;font-size:14px;font-weight:500;' + (on ? 'background:var(--ink);color:var(--paper)' : 'background:transparent;color:var(--ink)');
+
+    // Sample board: 3 other projects are already active, in either mode
+    const othersActive = 3;
+    const stage = v('stage');
+    const total = othersActive + (stage === 'active' ? 1 : 0);
+    const over = total > 3;
+    const pips = [];
+    for (let i = 0; i < Math.max(3, total); i++) {
+      pips.push({ style: 'width:14px;height:14px;box-sizing:border-box;border:1.5px solid var(--ink);border-radius:' + (i >= 3 ? '2px' : '50%') + ';background:' + (i < total ? 'var(--ink)' : 'transparent') });
+    }
+    let capMessage = '';
+    if (over) {
+      capMessage = capMode === 'block'
+        ? 'Active is full (3 of 3). Choose Holding, or move another project out of Active first.'
+        : 'This would make ' + total + ' active projects. The board is built around three at most.';
+    }
+
+    return {
+      eyebrow: edit ? 'Edit' : 'New',
+      heading: edit ? 'Edit project' : 'New project',
+      isEdit: edit,
+      saved: S.saved,
+      savedText: 'Project saved.',
+      errors: S.errors,
+      title: v('title'),
+      titleInvalid: S.errors.title ? 'true' : 'false',
+      titleStyle: 'box-sizing:border-box;width:100%;min-height:48px;padding:0 14px;border-radius:4px;background:var(--card);color:var(--ink);font-size:16px;' + (S.errors.title ? 'border:2px solid var(--ink)' : 'border:1px solid var(--rule)'),
+      setTitle: (e) => this.set({ title: e.target.value }),
+      categoryOptions: this.categories.map(([k, label]) => ({ label, pressed: v('category') === k ? 'true' : 'false', style: seg(v('category') === k), pick: () => this.set({ category: k }) })),
+      stageOptions: this.stages.map(([k, label]) => ({ label, pressed: stage === k ? 'true' : 'false', style: seg(stage === k), pick: () => this.set({ stage: k }) })),
+      pips,
+      gaugeText: total + ' of 3 active',
+      capMessage,
+      showTier: stage === 'holding',
+      tierOptions: this.tiers.map(([k, label]) => ({ label, pressed: v('tier') === k ? 'true' : 'false', style: seg(v('tier') === k), pick: () => this.set({ tier: k }) })),
+      desc: v('desc'),
+      setDesc: (e) => this.set({ desc: e.target.value }),
+      save: () => {
+        const errors = {};
+        if (!String(v('title')).trim()) errors.title = true;
+        if (!v('category')) errors.category = true;
+        if (over && capMode === 'block') errors.cap = true;
+        const ok = Object.keys(errors).length === 0;
+        this.setState({ errors, saved: ok });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

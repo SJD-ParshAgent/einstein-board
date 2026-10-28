@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Task form</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Instrument+Serif&display=swap">
+<style>
+body{margin:0}
+a:link,a:visited{color:inherit}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+input[type=checkbox]{accent-color:#DAD8D2;width:22px;height:22px;margin:0;flex:none}
+input[type=date]{color-scheme:dark}
+</style>
+</helmet>
+<div style="--paper:#1A1A19;--card:#222221;--ink:#DAD8D2;--muted:#A3A099;--rule:#4A4945;width:560px;min-height:1240px;box-sizing:border-box;padding:36px 36px 40px;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;display:flex;flex-direction:column;gap:28px">
+
+  <header style="display: flex; flex-direction: column; gap: 6px">
+    <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted)">{{eyebrow}}</span>
+    <h1 style="margin: 0; font-family: 'Instrument Serif', Georgia, serif; font-weight: 400; font-size: 40px; line-height: 1; color: var(--ink)">{{heading}}</h1>
+  </header>
+
+  <sc-if value="{{saved}}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 16px; border-radius: 4px; font-size: 14px; background: var(--ink); color: var(--paper)">
+      <span>Task saved.</span>
+      <a href="Layer0-Today.dc.html" style="display: flex; align-items: center; min-height: 44px; color: inherit; text-underline-offset: 3px">Back to Today</a>
+    </div>
+  </sc-if>
+
+  <form style="display: flex; flex-direction: column; gap: 26px" novalidate>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="f-title" style="font-size: 14px; font-weight: 500">Title</label>
+      <input id="f-title" type="text" value="{{title}}" onChange="{{setTitle}}" aria-invalid="{{titleInvalid}}" aria-describedby="f-title-err" style="{{titleStyle}}">
+      <sc-if value="{{errors.title}}" hint-placeholder-val="{{ false }}">
+        <span id="f-title-err" style="font-size: 13px; color: var(--ink)">Error: give the task a title.</span>
+      </sc-if>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="f-project" style="font-size: 14px; font-weight: 500">Project</label>
+      <select id="f-project" value="{{pid}}" onChange="{{setPid}}" style="{{inputStyle}}">
+        <sc-for list="{{projectOptions}}" as="o" hint-placeholder-count="5">
+          <option value="{{o.id}}" selected="{{o.selected}}">{{o.label}}</option>
+        </sc-for>
+      </select>
+      <sc-if value="{{holdingNote}}" hint-placeholder-val="{{ false }}">
+        <span style="font-size: 13px; line-height: 1.4; color: var(--muted)">This project is in Holding. Its tasks stay out of Today and This week while focus mode is on.</span>
+      </sc-if>
+    </div>
+
+    <fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+      <legend style="padding: 0; margin-bottom: 8px; font-size: 14px; font-weight: 500">Status</legend>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{statusOptions}}" as="s" hint-placeholder-count="4">
+          <button type="button" aria-pressed="{{s.pressed}}" onClick="{{s.pick}}" style="{{s.style}}">{{s.label}}</button>
+        </sc-for>
+      </div>
+      <span style="font-size: 13px; line-height: 1.4; color: var(--muted)">On deck is for the tasks you want to do next.</span>
+    </fieldset>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="f-due" style="font-size: 14px; font-weight: 500">Due date <span style="font-weight: 400; color: var(--muted)">(optional)</span></label>
+      <input id="f-due" type="date" value="{{due}}" onChange="{{setDue}}" style="{{inputStyle}}">
+      <label style="display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 15px">
+        <input type="checkbox" checked="{{pinned}}" onChange="{{togglePinned}}">
+        Pin to today
+      </label>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; padding-top: 22px; border-top: 1px dashed var(--rule)">
+      <label style="display: flex; align-items: center; gap: 12px; min-height: 44px; font-size: 15px; font-weight: 500">
+        <input type="checkbox" checked="{{recurring}}" onChange="{{toggleRecurring}}">
+        Repeats
+      </label>
+
+      <sc-if value="{{recurring}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 18px">
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+            <button type="button" aria-pressed="{{isFixed}}" onClick="{{pickFixed}}" style="{{fixedStyle}}">On a schedule</button>
+            <button type="button" aria-pressed="{{isRolling}}" onClick="{{pickRolling}}" style="{{rollingStyle}}">After I finish</button>
+          </div>
+
+          <sc-if value="{{isFixed}}" hint-placeholder-val="{{ true }}">
+            <fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+              <legend style="padding: 0; margin-bottom: 10px; font-size: 14px">Days of the week</legend>
+              <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+                <sc-for list="{{dayOptions}}" as="d" hint-placeholder-count="7">
+                  <button type="button" aria-pressed="{{d.pressed}}" aria-label="{{d.full}}" onClick="{{d.toggle}}" style="{{d.style}}">{{d.short}}</button>
+                </sc-for>
+              </div>
+              <sc-if value="{{errors.days}}" hint-placeholder-val="{{ false }}">
+                <span style="font-size: 13px">Error: pick at least one day.</span>
+              </sc-if>
+            </fieldset>
+          </sc-if>
+
+          <sc-if value="{{isRolling}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <span style="font-size: 14px">Repeat every</span>
+              <div style="display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px">
+                <input type="number" min="1" aria-label="Interval length" value="{{n}}" onChange="{{setN}}" style="{{nStyle}}">
+                <select aria-label="Interval unit" value="{{unit}}" onChange="{{setUnit}}" style="{{inputStyle}}">
+                  <sc-for list="{{unitOptions}}" as="u" hint-placeholder-count="3">
+                    <option value="{{u.id}}" selected="{{u.selected}}">{{u.label}}</option>
+                  </sc-for>
+                </select>
+              </div>
+              <sc-if value="{{errors.n}}" hint-placeholder-val="{{ false }}">
+                <span style="font-size: 13px">Error: enter a whole number of 1 or more.</span>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <div style="display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border: 1px dashed var(--rule); border-radius: 4px">
+            <span style="font-size: 14px; line-height: 1.4">{{ruleSentence}}</span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted)">{{ruleText}}</span>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="f-notes" style="font-size: 14px; font-weight: 500">Notes <span style="font-weight: 400; color: var(--muted)">(optional)</span></label>
+      <textarea id="f-notes" rows="4" onChange="{{setNotes}}" style="{{textareaStyle}}">{{notes}}</textarea>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-top: 22px; border-top: 1px dashed var(--ink)">
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
+        <button type="button" onClick="{{save}}" style="min-height: 48px; padding: 0 28px; border: 1px solid var(--ink); border-radius: 4px; background: var(--ink); color: var(--paper); font-size: 15px; font-weight: 600">Save task</button>
+        <a href="Layer0-Today.dc.html" style="display: flex; align-items: center; min-height: 48px; padding: 0 16px; border: 1px solid var(--rule); border-radius: 4px; color: var(--ink); font-size: 15px; text-decoration: none">Cancel</a>
+      </div>
+      <sc-if value="{{isEdit}}" hint-placeholder-val="{{ false }}">
+        <button type="button" style="min-height: 44px; padding: 0 8px; border: 0; background: transparent; color: var(--muted); font-size: 14px; text-decoration: underline; text-underline-offset: 3px">Delete task</button>
+      </sc-if>
+    </div>
+  </form>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"mode":{"editor":"enum","options":["new","edit"],"default":"new","section":"Form"},"$preview":{"width":560,"height":1240}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { f: {}, errors: {}, saved: false };
+    this.projects = [
+      { id: '1', title: 'Home & Hearth', held: false },
+      { id: '2', title: 'Whirlwind', held: false },
+      { id: '3', title: 'Grant proposal rewrite', held: false },
+      { id: '4', title: 'Neighborhood tool library', held: false },
+      { id: '5', title: 'Basement workshop', held: false },
+      { id: '6', title: 'Curriculum overhaul', held: true },
+      { id: '7', title: 'Food pantry volunteer schedule', held: true },
+      { id: '8', title: 'Learn to throw pottery', held: true },
+      { id: '9', title: 'Write the book', held: true }
+    ];
+    this.statuses = [['todo', 'To do'], ['on-deck', 'On deck'], ['in-progress', 'In progress'], ['done', 'Done']];
+    // cron day numbers, Monday first
+    this.days = [[1, 'M', 'Monday'], [2, 'T', 'Tuesday'], [3, 'W', 'Wednesday'], [4, 'T', 'Thursday'], [5, 'F', 'Friday'], [6, 'S', 'Saturday'], [0, 'S', 'Sunday']];
+    this.units = [['d', 'days', 'day'], ['w', 'weeks', 'week'], ['m', 'months', 'month']];
+  }
+
+  defaults() {
+    const edit = (this.props.mode ?? 'new') === 'edit';
+    return edit
+      ? { title: 'Take out recycling', pid: '1', status: 'todo', due: '', pinned: false, recurring: true, rtype: 'fixed', days: [2], n: '7', unit: 'd', notes: '' }
+      : { title: '', pid: '1', status: 'todo', due: '', pinned: false, recurring: false, rtype: 'fixed', days: [], n: '7', unit: 'd', notes: '' };
+  }
+
+  set(patch) {
+    this.setState({ f: { ...this.state.f, ...patch }, saved: false });
+  }
+
+  renderVals() {
+    const S = this.state;
+    const d = this.defaults();
+    const v = (k) => (k in S.f ? S.f[k] : d[k]);
+    const edit = (this.props.mode ?? 'new') === 'edit';
+    const box = 'box-sizing:border-box;width:100%;min-height:48px;padding:0 14px;border-radius:4px;background:var(--card);color:var(--ink);font-size:16px;';
+    const inputStyle = box + 'border:1px solid var(--rule)';
+    const seg = (on) => 'min-height:48px;padding:0 10px;border:1px solid ' + (on ? 'var(--ink)' : 'var(--rule)') + ';border-radius:4px;font-size:14px;font-weight:500;' + (on ? 'background:var(--ink);color:var(--paper)' : 'background:transparent;color:var(--ink)');
+
+    const fixed = v('rtype') === 'fixed';
+    const days = v('days');
+    const sortedDays = this.days.filter((x) => days.indexOf(x[0]) >= 0);
+    const n = parseInt(v('n'), 10);
+    const unit = this.units.find((u) => u[0] === v('unit'));
+
+    let ruleSentence = '';
+    let ruleText = '';
+    if (fixed) {
+      if (sortedDays.length) {
+        ruleSentence = 'Due every ' + sortedDays.map((x) => x[2]).join(' and ') + ', even if the last one was missed.';
+        ruleText = 'fixed · 0 0 * * ' + sortedDays.map((x) => x[0]).join(',');
+      } else {
+        ruleSentence = 'Pick the days this should come due.';
+        ruleText = 'fixed';
+      }
+    } else if (n >= 1) {
+      ruleSentence = 'Due ' + n + ' ' + (n === 1 ? unit[2] : unit[1]) + ' after you complete it.';
+      ruleText = 'rolling · ' + n + unit[0];
+    } else {
+      ruleSentence = 'Enter how long after finishing it should come due.';
+      ruleText = 'rolling';
+    }
+
+    const pid = v('pid');
+    const proj = this.projects.find((p) => p.id === pid);
+
+    return {
+      eyebrow: edit ? 'Edit' : 'New',
+      heading: edit ? 'Edit task' : 'New task',
+      isEdit: edit,
+      saved: S.saved,
+      errors: S.errors,
+      title: v('title'),
+      titleInvalid: S.errors.title ? 'true' : 'false',
+      titleStyle: box + (S.errors.title ? 'border:2px solid var(--ink)' : 'border:1px solid var(--rule)'),
+      inputStyle,
+      textareaStyle: 'box-sizing:border-box;width:100%;padding:12px 14px;border-radius:4px;background:var(--card);color:var(--ink);font-size:16px;line-height:1.4;border:1px solid var(--rule);resize:vertical',
+      setTitle: (e) => this.set({ title: e.target.value }),
+      projectOptions: this.projects.map((p) => ({ id: p.id, label: p.title + (p.held ? ' (Holding)' : ''), selected: p.id === pid })),
+      pid,
+      setPid: (e) => this.set({ pid: e.target.value }),
+      holdingNote: !!proj && proj.held,
+      statusOptions: this.statuses.map(([k, label]) => ({ label, pressed: v('status') === k ? 'true' : 'false', style: seg(v('status') === k), pick: () => this.set({ status: k }) })),
+      due: v('due'),
+      setDue: (e) => this.set({ due: e.target.value }),
+      pinned: v('pinned'),
+      togglePinned: () => this.set({ pinned: !v('pinned') }),
+      recurring: v('recurring'),
+      toggleRecurring: () => this.set({ recurring: !v('recurring') }),
+      isFixed: fixed,
+      isRolling: !fixed,
+      fixedStyle: seg(fixed),
+      rollingStyle: seg(!fixed),
+      pickFixed: () => this.set({ rtype: 'fixed' }),
+      pickRolling: () => this.set({ rtype: 'rolling' }),
+      dayOptions: this.days.map(([num, short, full]) => {
+        const on = days.indexOf(num) >= 0;
+        return {
+          short, full, pressed: on ? 'true' : 'false',
+          style: seg(on) + ';padding:0',
+          toggle: () => this.set({ days: on ? days.filter((x) => x !== num) : days.concat([num]) })
+        };
+      }),
+      n: v('n'),
+      nStyle: box + (S.errors.n ? 'border:2px solid var(--ink)' : 'border:1px solid var(--rule)'),
+      setN: (e) => this.set({ n: e.target.value }),
+      unit: v('unit'),
+      unitOptions: this.units.map(([k, label]) => ({ id: k, label, selected: k === v('unit') })),
+      setUnit: (e) => this.set({ unit: e.target.value }),
+      ruleSentence,
+      ruleText,
+      notes: v('notes'),
+      setNotes: (e) => this.set({ notes: e.target.value }),
+      save: () => {
+        const errors = {};
+        if (!String(v('title')).trim()) errors.title = true;
+        if (v('recurring') && v('rtype') === 'fixed' && v('days').length === 0) errors.days = true;
+        if (v('recurring') && v('rtype') === 'rolling' && !(parseInt(v('n'), 10) >= 1)) errors.n = true;
+        const ok = Object.keys(errors).length === 0;
+        this.setState({ errors, saved: ok });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
